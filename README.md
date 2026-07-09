@@ -25,7 +25,7 @@ Here's the JSON you'll need to configure your plugin. If you only have one envir
 <pre>
 {
     "plugin": {
-        "url": "https://github.com/wrobins/cordova-plugin-msal.git#v3.0.0-alpha.0",
+        "url": "https://github.com/tgptom/cordova-plugin-msal.git#v3.0.0-alpha.0",
         "variables": [
             {
                 "name": "TENANT_ID",
