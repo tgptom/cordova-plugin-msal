@@ -1,6 +1,6 @@
 {
     "name": "cordova-plugin-msal",
-    "version": "3.0.0-alpha.3",
+    "version": "4.1.3",
     "description": "A Cordova plugin providing a wrapper for Microsoft's MSAL library for Android and iOS.",
     "cordova": {
       "id": "cordova-plugin-msal",
@@ -18,7 +18,6 @@
       "cordova",
       "cordova-android",
       "cordova-ios",
-      "cordova-browser",
       "Microsoft",
       "MSAL",
       "Azure",
@@ -29,11 +28,10 @@
     ],
     "engines": {
       "cordovaDependencies": {
-        "3.0.0": { 
-          "cordova-android": ">=8.1.0",
-          "cordova": ">=7.0.0",
-          "cordova-ios": ">=5.1.1",
-          "cordova-browser": ">=6.0.0"
+        "1.0.0": { 
+          "cordova": ">=11.0.0",
+          "cordova-android": ">=11.0.0",
+          "cordova-ios": ">=6.2.0"
         }
       }
     },
@@ -42,5 +40,6 @@
     "bugs": {
       "url": "https://github.com/tgptom/cordova-plugin-msal/issues"
     },
+    "types": "./index.d.ts",
     "homepage": "https://github.com/tgptom/cordova-plugin-msal"
 }

@@ -1,5 +1,3 @@
-const clientID = CLIENT_ID;
-const tenantId = TENANT_ID;
 const msal = window.msal;
 
 let msalApp = null;
@@ -10,14 +8,13 @@ const msalConfig = {
     }
 };
 const loginRequest = {};
-const msalAccounts = [];
 let accountMode = 'SINGLE';
 
 function msalInit(success, error, opts) {
     try {
         const providedConfig = JSON.parse(opts[0]);
-        msalConfig.auth.clientId = clientID;
-        msalConfig.auth.authority = `https://login.microsoftonline.com/${tenantId}`;
+        msalConfig.auth.clientId = providedConfig.clientId;
+        msalConfig.auth.authority = `https://login.microsoftonline.com/${providedConfig.tenantId}`;
         msalConfig.auth.knownAuthorities = providedConfig.authorities.filter(a => a.authorityUrl !== '').map(a => a.authorityUrl);
         accountMode = providedConfig.accountMode;
         loginRequest.scopes = providedConfig.scopes;
@@ -42,6 +39,7 @@ function signInSilent(success, error, opts) {
             msalApp.acquireTokenSilent(loginRequest)
                 .then(resp => {
                     const account = {
+                        idToken: resp.idToken,
                         token: resp.accessToken,
                         account: {
                             id: resp.uniqueId,
@@ -100,6 +98,7 @@ function signInInteractive(success, error, opts) {
             .then(resp => {
                 const account = {
                     token: resp.accessToken,
+                    idToken: resp.idToken,
                     account: {
                         id: resp.uniqueId,
                         username: resp.account.username,

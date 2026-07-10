@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
         xmlns:android="http://schemas.android.com/apk/res/android"
-        id="cordova-plugin-msal" version="3.0.0-alpha.3">
+        id="cordova-plugin-msal" version="4.1.3">
     <name>Cordova MSAL Plugin</name>
     <description>A Cordova plugin providing a wrapper for Microsoft's MSAL library for Android and iOS.</description>
     <author>Walter Robins</author>
@@ -10,22 +10,18 @@
     <repo>https://github.com/tgptom/cordova-plugin-msal.git</repo>
     <issue>https://github.com/tgptom/cordova-plugin-msal/issues</issue>
     <engines>
-        <engine name="cordova-android" version=">=8.1.0"/>
-        <engine name="cordova-ios" version=">=5.1.1"/>
+        <engine name="cordova-android" version=">=9.0.0"/>
+        <engine name="cordova-ios" version=">=6.1.1"/>
         <engine name="cordova-browser" version=">=6.0.0"/>
     </engines> 
     <js-module src="www/msalplugin.js" name="msalPlugin">
         <clobbers target="cordova.plugins.msalPlugin" />
     </js-module>
-    <preference name="TENANT_ID" default="common" />
-    <preference name="CLIENT_ID" />
     <preference name="KEY_HASH" default="not-provided" />
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="MsalPlugin">
                 <param name="android-package" value="com.wrobins.cordova.plugin.MsalPlugin" />
-                <preference name="tenantId" value="$TENANT_ID" />
-                <preference name="clientId" value="$CLIENT_ID" />
                 <preference name="keyHash" value="$KEY_HASH" />
             </feature>
         </config-file>
@@ -34,7 +30,7 @@
             <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE "/>
         </config-file>
         <config-file target="AndroidManifest.xml" parent="application">
-            <activity
+            <activity android:exported="true"
                 android:name="com.microsoft.identity.client.BrowserTabActivity">
                 <intent-filter>
                     <action android:name="android.intent.action.VIEW" />
@@ -52,14 +48,13 @@
         </config-file>
         <source-file src="src/android/MsalPlugin.java" target-dir="src/com/wrobins/cordova/plugin" />
         <framework src="src/android/build-extras.gradle" custom="true" type="gradleReference" />
+        <framework src="com.microsoft.identity.client:msal:6.0.1" />
     </platform>
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
             <feature name="MsalPlugin">
                 <param name="ios-package" value="MsalPlugin" />
                 <param name="onload" value="true" />
-                <preference name="tenantId" value="$TENANT_ID" />
-                <preference name="clientId" value="$CLIENT_ID" />
             </feature>
             <feature name="">
                 <param name="ios-package" value="" />
@@ -133,8 +128,6 @@
           <feature name="MsalPlugin">
             <param name="browser-package" value="MsalPlugin" />
           </feature>
-          <preference name="tenantId" value="$TENANT_ID" />
-          <preference name="clientId" value="$CLIENT_ID" />
         </config-file>
         <js-module src="src/browser/msal-browser.min.js" name="Msal">
             <merges target="msal" />
@@ -143,10 +136,4 @@
           <runs />
         </js-module>
     </platform>
-    <platform name="windows">
-        <config-file target="config.xml" parent="/*">
-            <preference name="windows-target-version" value="10.0" />
-        </config-file>
-    </platform>
-    <hook type="after_prepare" src="src/scripts/after_prepare.js" />
 </plugin>

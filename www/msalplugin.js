@@ -14,7 +14,12 @@ module.exports = {
             multipleCloudsSupported: false,
             brokerRedirectUri: false,
             accountMode: 'SINGLE',
-            scopes: ['User.Read']
+            scopes: ['User.Read'],
+            webViewZoomControlsEnabled: false,
+            webViewZoomEnabled: false,
+            powerOptCheckForNetworkReqEnabled: true,
+            clientId: '',
+            tenantId: 'common'
         }
         if (!options) {
             options = defaultOptions;
@@ -56,9 +61,19 @@ module.exports = {
             }
             if (typeof(options.scopes) == 'undefined') {
                 options.scopes = defaultOptions.scopes;
+            }            
+            if (typeof(options.clientId) == 'undefined') {
+                options.clientId = defaultOptions.clientId;
+            }
+            if (typeof(options.tenantId) == 'undefined') {
+                options.tenantId = defaultOptions.tenantId;
             }
         }
-        cordova.exec(successCallback, errorCallback, 'MsalPlugin', 'msalInit', [JSON.stringify(options)]);
+        if (options.clientId === '') {
+            errorCallback("Client ID is missing.");
+        } else {
+            cordova.exec(successCallback, errorCallback, 'MsalPlugin', 'msalInit', [JSON.stringify(options)]);
+        }
     },
     startLogger: function(updateCallback, errorCallback, containsPII = false, logLevel = 'VERBOSE') {
         cordova.exec(updateCallback, errorCallback, 'MsalPlugin', 'startLogger', [containsPII, logLevel]);
