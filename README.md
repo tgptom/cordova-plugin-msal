@@ -3,14 +3,13 @@ So you want to integrate your mobile app with Microsoft's authentication service
 ## Basic Assumptions and Requirements
 This plugin implements [Microsoft's MSAL plugin](https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-overview) for Android and iOS. I'm assuming you're here because you've already read their documentation and understand how to configure Azure AD authentication for your organization and are simply looking for an existing Cordova wrapper to implement it on the mobile side.
 ## How do I install it?
-You can specify three variables during installation: the tenant ID and client ID of your Identity Platform, and, if you're building for Android, a base64 sha1 hash of your keystore file. The latter of which can be obtained like this:
+You can install it just like any other Cordova plugin. However, if you're building for Android, you need to specify an optional install variable: a base64 sha1 hash of your keystore file. It can be obtained like this:
 <pre>
 keytool -exportcert -alias yourkeystorealias -keystore path/to/your/keystore/file.keystore | openssl sha1 -binary | openssl base64
 </pre>
-If you aren't using AzureADMyOrg as one of your authorities, you can omit TENANT_ID, and if you're only building for iOS, you can omit KEY_HASH, but you really need to provide CLIENT_ID.
 ### If you're using a CLI:
 <pre>
-cordova plugin add cordova-plugin-msal --variable TENANT_ID=your-tenant-guid-here --variable CLIENT_ID=your-client-guid-here --variable KEY_HASH=S0m3K3yh4shH3re=
+cordova plugin add cordova-plugin-msal --variable KEY_HASH=S0m3K3yh4shH3re=
 </pre>
 ### If you're using OutSystems
 You should use my [forge component](https://www.outsystems.com/forge/Component_Overview.aspx?ProjectId=8038). But if you want to implement a wrapper yourself, or if you're here because you're using that component and you want additional documentation, continue reading:
@@ -25,16 +24,8 @@ Here's the JSON you'll need to configure your plugin. If you only have one envir
 <pre>
 {
     "plugin": {
-        "url": "https://github.com/tgptom/cordova-plugin-msal.git#v3.0.0-alpha.0",
+        "url": "https://github.com/tgptom/cordova-plugin-msal.git#v4.1.3",
         "variables": [
-            {
-                "name": "TENANT_ID",
-                "value": "your-tenant-guid-here-optional"
-            },
-            {
-                "name": "CLIENT_ID",
-                "value": "your-client-guid-here-required"
-            },
             {
                 "name": "KEY_HASH",
                 "value": "S0m3K3yh4shH3re="
@@ -57,7 +48,7 @@ function (err) {
     // err has your exception message
 }, options);
 ```
-The options parameter is an object that contains all of your MSAL configuration items, and is documented below. You can pass as much or as little of this object as you would like, or not even pass it at all. The full object, though, with all of the default options, looks like this:
+The options parameter is an object that contains all of your MSAL configuration items, and is documented below. You can pass as much or as little of this object as you would like; the only required option is clientId. The full object, though, with all of the default options, looks like this:
 ```js
 {
     authorities: [
@@ -73,7 +64,12 @@ The options parameter is an object that contains all of your MSAL configuration 
     multipleCloudsSupported: false,
     brokerRedirectUri: false,
     accountMode: 'SINGLE',
-    scopes: ['User.Read']
+    scopes: ['User.Read'],
+    webViewZoomControlsEnabled: false,
+    webViewZoomEnabled: false,
+    powerOptCheckForNetworkReqEnabled: true,
+    clientId: '',
+    tenantId: 'common'
 }
 ```
 Like I said before, this readme assumes basic knowledge of MSAL and you should look at Microsoft's documentation for how most of these attributes work, as they are named very similar both in this library and in all native platforms. But here is a basic refresher of what each option does and how to use it in this plugin.
@@ -101,6 +97,21 @@ This is another Android option (boolean). Set to true if you want your applicati
 This is either 'SINGLE' or 'MULTIPLE' and controls the behavior of signing in and out. In single mode, MSAL only uses one account at a time, and signs in the user silently with that account if you call signInSilent(). In multiple account mode, you can support multiple accounts in your app, but you need to manage MSAL's list of those accounts (see below) and pass in which account you want to sign in and out of unless you're doing interactive sign-in. Default: 'SINGLE'
 #### scopes
 This is a text array and represents the information MSAL requests from the Graph API during its operation. In most cases you won't need to change this, and only do so if you really know what you're doing. Default: ['User.Read']
+#### webViewZoomControlsEnabled
+#### webViewZoomEnabled
+Android-only: Optional zoom controls for defining web view behavior. Default: false
+#### powerOptCheckForNetworkReqEnabled
+Android-only: Check power optimization setting before attempting network in doze mode. Default: true
+#### clientId
+This is the client ID you got from Microsoft for your Azure application.
+#### tenantId
+If you are using a custom Azure tenant you need to supply it here. If you aren't using AzureADMyOrg as one of your authorities, you can leave this alone. Default: 'common'
+
+So at minimum, this is what msalInit() should look like when you call it:
+
+```js
+window.cordova.plugins.msalPlugin.msalInit(mySuccessFunction, myErrorHandler, {clientId: 'my-clid-id-guid'});
+```
 
 Ok, you have your plugin initialized with your organization's configuration. Here's how you sign users in and out:
 ### Single Client
@@ -193,7 +204,7 @@ This is usually the account's email address that they would use to sign in.
 #### claims
 This is an array of key/value pairs that, depending on the organization, tenant, account, can contain lots of different pieces of information about the account, such as the user's given name, audience and tenant information, as well as the the token's issue and expiration date. But you'll have to play around with this to see what it contains.
 
-### Multiple Clients
+### Multiple Accounts
 Operation is very similar to single account mode, but with one extra method to get the accounts you need: getAccounts(). It returns an array of objects to represent accounts found in your app, defined exactly like the signin response objects outlined above. Use it to see if you need to sign in a user interactively or manually. Your signInSilent() and signOut() methods will take an account id (the GUID, not the username) as an argument to pick which account you're working with.
 
 Again, your logic might look more separate if you want to have guest access to your app, but this code without guest access should give you an idea of how this plugin works:
@@ -285,6 +296,15 @@ window.cordova.plugins.msalPlugin.signInInteractive(mycbfunction(msg), myerrorfu
 );
 ```
 
+## Multiple tenants/client applications
+If you want to support different geographical regions or tenants without having to rebuild the app for each different configuration, you can swap your tenant or client at any time by simply calling msalInit() again and specify a new tenant and/or client ID:
+```js
+cordova.plugins.msalPlugin.msalInit(resolve, reject, {
+    ...
+    clientId: 'abcd1234-1111-2222-3333-eeeeeeffffff'
+});
+```
+
 ## Logging/Debugging
 You can enable the MSAL logger in this plugin by simply calling:
 ```js
@@ -333,7 +353,7 @@ MSAL will log events intended for informational purposes not necessarily intende
 Note that once the logger is started it can't be stopped for the duration of your app being open. This is a limitation from Android's implementation of MSAL; once the logger callback has been defined it can't be modified or an exception is thrown.
 
 ## Troubleshooting
-This plugin uses androidx features. If you get an error complaining about conflicting dependencies, you might need to add a couple of plugins to provide androidx compatibility, but your results may vary depending on if you are building locally or with a cloud-based utility.
+This plugin uses androidx features. If you are trying to target certain older Android builds and get an error complaining about conflicting dependencies at buildtime, you might need to add a couple of plugins to provide androidx compatibility, but your results may vary depending on if you are building locally or with a cloud-based utility.
 <pre>
 cordova plugin add cordova-plugin-androidx
 cordova plugin add cordova-plugin-androidx-adapter

@@ -6,10 +6,6 @@
 
 - (void)msalInit:(CDVInvokedUrlCommand *)command
 {
-    NSDictionary *settings = self.commandDelegate.settings;
-    self.tenantId = [settings objectForKey:[@"tenantId" lowercaseString]];
-    self.clientId = [settings objectForKey:[@"clientId" lowercaseString]];
-
     NSError *err = nil;
     NSError *msalError = nil;
     CDVPluginResult *result = nil;
@@ -27,6 +23,12 @@
         return;
     }
     NSDictionary *options = (NSDictionary *)obj;
+    if (![[options objectForKey:@"tenantId"] isEqualToString:@""]) {
+        self.tenantId = [options objectForKey:@"tenantId"];
+    }
+    if (![[options objectForKey:@"clientId"] isEqualToString:@""]) {
+        self.clientId = [options objectForKey:@"clientId"];
+    }
     NSArray *authorities = [options objectForKey:@"authorities"];
     for (NSDictionary *a in authorities)
     {
@@ -124,6 +126,7 @@
     NSMutableDictionary *obj = [[NSMutableDictionary alloc] initWithCapacity:2];
     [obj setValue:result.accessToken forKey:@"token"];
     [obj setValue:[self getAccountObject:result.account] forKey:@"account"];
+    [obj setValue:result.idToken forKey:@"idToken"];
     return [[NSDictionary alloc] initWithDictionary:obj];
 }
 
@@ -153,11 +156,11 @@
     [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
     
     if ([command.arguments objectAtIndex:0] == [NSNumber numberWithBool:NO]) {
-        MSALGlobalConfig.loggerConfig.piiEnabled = NO;
+        MSALGlobalConfig.loggerConfig.logMaskingLevel = MSALLogMaskingSettingsMaskAllPII;
     }
     else
     {
-        MSALGlobalConfig.loggerConfig.piiEnabled = YES;
+        MSALGlobalConfig.loggerConfig.logMaskingLevel = MSALLogMaskingSettingsMaskSecretsOnly;
     }
     
     if ([[command.arguments objectAtIndex:1] isEqualToString:@"ERROR"])
@@ -307,7 +310,7 @@
     }
     else
     {
-        MSALWebviewParameters *webParameters = [[MSALWebviewParameters alloc] initWithParentViewController:[self viewController]];
+        MSALWebviewParameters *webParameters = [[MSALWebviewParameters alloc] initWithAuthPresentationViewController:[self viewController]];
         
         NSError *err = nil;
         CDVPluginResult *result = nil;
