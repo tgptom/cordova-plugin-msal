@@ -110,7 +110,7 @@ If you are using a custom Azure tenant you need to supply it here. If you aren't
 So at minimum, this is what msalInit() should look like when you call it:
 
 ```js
-window.cordova.plugins.msalPlugin.msalInit(mySuccessFunction, myErrorHandler, {clientId: 'my-clid-id-guid'});
+window.cordova.plugins.msalPlugin.msalInit(mySuccessFunction, myErrorHandler, {clientId: 'my-client-id-guid'});
 ```
 
 Ok, you have your plugin initialized with your organization's configuration. Here's how you sign users in and out:

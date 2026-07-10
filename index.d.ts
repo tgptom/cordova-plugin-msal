@@ -13,7 +13,7 @@
 // }
 
 /**
- * Azure AD Authory listings
+ * Azure AD Authority listings
  *
  * As per https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-configuration
  */
