@@ -4,4 +4,4 @@ repositories {
     }
 }
 
-ext.cdvCompileSdkVersion = 35
+ext.cdvCompileSdkVersion = 36
