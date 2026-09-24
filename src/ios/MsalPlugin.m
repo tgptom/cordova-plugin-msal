@@ -294,8 +294,11 @@
                     CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"No account currently exists"];
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 }
-                    
-                // Other errors may require trying again later, or reporting authentication problems to the user
+                else
+                {
+                    CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[error.userInfo objectForKey:@"MSALErrorDescriptionKey"]];
+                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                }
             }
         }];
     }

@@ -116,8 +116,24 @@ interface InteractiveSignInOptions {
   webViewType: string;
 }
 
+interface MsalLogEntry {
+  timestamp: string;
+  threadId: number;
+  correlationId: string;
+  logLevel: "VERBOSE" | "ERROR" | "WARNING" | "INFO";
+  containsPII: boolean;
+  message: string;
+}
+
 interface MSALPlugin {
   msalInit(success: () => any, error: (err: any) => any, options: InitOptions);
+
+  startLogger(
+    success: (entry: MsalLogEntry) => any,
+    error: (err: any) => any,
+    containsPII?: boolean,
+    logLevel?: "VERBOSE" | "ERROR" | "WARNING" | "INFO"
+  );
 
   signInSilent(
     success: (resp: JwtToken) => any,

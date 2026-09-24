@@ -1,5 +1,53 @@
 # Cordova MSAL Plugin
 So you want to integrate your mobile app with Microsoft's authentication service?
+
+## v5.0.0 compatibility baseline
+
+- **MSAL Android**: `com.microsoft.identity.client:msal:8.5.0`
+- **MSAL iOS**: `MSAL (= 2.16.0)`
+- **Cordova Android**: `cordova-android >=15.0.0`
+- **Cordova iOS**: `cordova-ios >=7.0.0` (plugin engine requirement unchanged)
+- **Android compile SDK**: API 36 (this plugin keeps `ext.cdvCompileSdkVersion = 36`)
+- **Android target SDK policy**: this plugin intentionally does **not** set `cdvTargetSdkVersion`; target SDK is owned by Cordova Android / the consuming application
+- **Android repositories**: plugin keeps the custom Microsoft/Duo Maven feed because MSAL transitive dependency `com.microsoft.device.display:display-mask:0.3.0` is still resolved from that feed
+- **iOS deployment target**: **17.0 minimum required** by MSAL iOS 2.16.0
+
+### Required iOS project setting
+
+Your consuming Cordova app must set iOS deployment target to 17.0 or newer, for example:
+
+```xml
+<preference name="deployment-target" value="17.0" />
+```
+
+Do not expect plugin release `v5.x` to deploy to iOS 13–16.
+
+### Cordova iOS 7/8 status
+
+This repository now includes fixture-build CI for `cordova-ios@7` and `cordova-ios@8` with deployment target 17.0. Treat compatibility claims as **build/static validation only** unless/until your workflow run and physical-device tests pass.
+
+### Upgrade notes for existing users (v4.x -> v5.x)
+
+- Upgrade your app platform to **Cordova Android 15+**.
+- Install Android SDK Platform **36** in your build environment.
+- Update iOS deployment target to **17.0+**.
+- Re-test login flows and broker behavior on physical devices after upgrading.
+- No JavaScript API surface changes are required for consumers.
+
+### Manual physical-device validation matrix (recommended before production)
+
+Validate on real devices (not simulator-only):
+
+- Interactive login (success, cancel, retry)
+- Silent token acquisition (warm token cache / expired token refresh)
+- Single-account mode and multiple-account mode
+- Sign-out and subsequent re-authentication
+- Broker disabled vs broker enabled flows
+- URL callback handling when multiple plugins register URL handlers
+- Token/keychain persistence across app reinstall/upgrade scenarios
+
+Simulator/build validation does **not** prove Microsoft Authenticator integration, broker callback behavior, keychain persistence, or full interactive auth reliability.
+
 ## Basic Assumptions and Requirements
 This plugin implements [Microsoft's MSAL plugin](https://docs.microsoft.com/en-us/azure/active-directory/develop/msal-overview) for Android and iOS. I'm assuming you're here because you've already read their documentation and understand how to configure Azure AD authentication for your organization and are simply looking for an existing Cordova wrapper to implement it on the mobile side.
 ## How do I install it?
@@ -24,7 +72,7 @@ Here's the JSON you'll need to configure your plugin. If you only have one envir
 <pre>
 {
     "plugin": {
-        "url": "https://github.com/tgptom/cordova-plugin-msal.git#v4.1.3",
+        "url": "https://github.com/tgptom/cordova-plugin-msal.git#v5.0.0",
         "variables": [
             {
                 "name": "KEY_HASH",

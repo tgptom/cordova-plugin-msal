@@ -1,45 +1,48 @@
 {
     "name": "cordova-plugin-msal",
-    "version": "4.2.0",
+    "version": "5.0.0",
     "description": "A Cordova plugin providing a wrapper for Microsoft's MSAL library for Android and iOS.",
     "cordova": {
-      "id": "cordova-plugin-msal",
-      "platforms": [
-        "android",
-        "ios",
-        "browser"
-      ]
+        "id": "cordova-plugin-msal",
+        "platforms": [
+            "android",
+            "ios",
+            "browser"
+        ]
     },
     "repository": {
-      "type": "git",
-      "url": "git+https://github.com/tgptom/cordova-plugin-msal.git"
+        "type": "git",
+        "url": "git+https://github.com/tgptom/cordova-plugin-msal.git"
     },
     "keywords": [
-      "cordova",
-      "cordova-android",
-      "cordova-ios",
-      "Microsoft",
-      "MSAL",
-      "Azure",
-      "Graph-API",
-      "Authentication",
-      "OutSystems",
-      "ecosystem:cordova"
+        "cordova",
+        "cordova-android",
+        "cordova-ios",
+        "Microsoft",
+        "MSAL",
+        "Azure",
+        "Graph-API",
+        "Authentication",
+        "OutSystems",
+        "ecosystem:cordova"
     ],
     "engines": {
-      "cordovaDependencies": {
-        "4.2.0": {
-          "cordova": ">=12.0.0",
-          "cordova-android": ">=12.0.0",
-          "cordova-ios": ">=7.0.0"
+        "cordovaDependencies": {
+            "5.0.0": {
+                "cordova": ">=12.0.0",
+                "cordova-android": ">=15.0.0",
+                "cordova-ios": ">=7.0.0"
+            }
         }
-      }
     },
     "author": "Walter Robins <wrobins@kent.edu>",
     "license": "Apache 2.0",
     "bugs": {
-      "url": "https://github.com/tgptom/cordova-plugin-msal/issues"
+        "url": "https://github.com/tgptom/cordova-plugin-msal/issues"
     },
     "types": "./index.d.ts",
-    "homepage": "https://github.com/tgptom/cordova-plugin-msal"
+    "homepage": "https://github.com/tgptom/cordova-plugin-msal",
+    "scripts": {
+        "test": "node --test"
+    }
 }

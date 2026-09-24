@@ -1,0 +1,101 @@
+name: Validate plugin compatibility
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  static-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run metadata and contract checks
+        run: npm test
+
+  android-build-cordova-15:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android Platform 36
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Install Cordova CLI
+        run: npm install -g cordova@12
+
+      - name: Build Android fixture with cordova-android@15
+        run: |
+          set -eux
+          mkdir -p /tmp/cordova-android-fixture
+          cd /tmp/cordova-android-fixture
+          cordova create app com.example.msalfixture MsalFixture
+          cd app
+          cordova platform add android@15
+          cordova plugin add "$GITHUB_WORKSPACE" --variable KEY_HASH=S0m3K3yh4shH3re=
+          cordova build android --debug
+
+  ios-build-matrix:
+    runs-on: macos-14
+    strategy:
+      fail-fast: false
+      matrix:
+        cordova_ios:
+          - 7
+          - 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Cordova CLI
+        run: npm install -g cordova@12
+
+      - name: Build iOS fixture
+        run: |
+          set -eux
+          mkdir -p /tmp/cordova-ios-fixture
+          cd /tmp/cordova-ios-fixture
+          cordova create app com.example.msalfixture MsalFixture
+          cd app
+          python3 - <<'PY'
+from pathlib import Path
+p = Path('config.xml')
+s = p.read_text()
+if 'name="deployment-target"' not in s:
+    s = s.replace('>', '>\n    <preference name="deployment-target" value="17.0" />', 1)
+p.write_text(s)
+PY
+          cordova platform add "ios@${{ matrix.cordova_ios }}"
+          cordova plugin add "$GITHUB_WORKSPACE"
+          cordova build ios --simulator
