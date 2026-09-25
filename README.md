@@ -6,7 +6,7 @@ This plugin implements [Microsoft's MSAL plugin](https://docs.microsoft.com/en-u
 - `cordova-android >=15.0.0`
 - `cordova-ios >=7.0.0`
 - Android MSAL: `com.microsoft.identity.client:msal:8.5.0`
-- iOS MSAL: `2.14.1` (pinned intentionally; Xcode 27 minimum iOS deployment target is 15.0, while MSAL 2.15+ requires iOS 17)
+- iOS MSAL: `2.11.0` (pinned intentionally; upstream MSAL podspecs show 2.12.0+ requires iOS 16 and 2.15.0+ requires iOS 17)
 ## How do I install it?
 You can install it just like any other Cordova plugin. However, if you're building for Android, you need to specify an optional install variable: a base64 sha1 hash of your keystore file. It can be obtained like this:
 <pre>

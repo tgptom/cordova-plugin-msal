@@ -52,7 +52,6 @@
     </platform>
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
-            <preference name="deployment-target" value="15.0" />
             <feature name="MsalPlugin">
                 <param name="ios-package" value="MsalPlugin" />
                 <param name="onload" value="true" />
@@ -90,7 +89,7 @@
                 <source url="https://cdn.cocoapods.org/"/>
             </config>
             <pods use_frameworks="true">
-                <pod name="MSAL" spec="2.14.1" />
+                <pod name="MSAL" spec="2.11.0" />
             </pods>
         </podspec>
         <config-file target="*-Info.plist" parent="CFBundleURLTypes">
