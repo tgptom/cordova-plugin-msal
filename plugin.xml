@@ -18,6 +18,7 @@
         <clobbers target="cordova.plugins.msalPlugin" />
     </js-module>
     <preference name="KEY_HASH" default="not-provided" />
+    <hook type="after_prepare" src="scripts/ios-enforce-deployment-target.js" />
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="MsalPlugin">

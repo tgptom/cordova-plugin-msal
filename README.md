@@ -5,8 +5,23 @@ This plugin implements [Microsoft's MSAL plugin](https://docs.microsoft.com/en-u
 ### Platform and dependency minimums
 - `cordova-android >=15.0.0`
 - `cordova-ios >=7.0.0`
+- iOS app deployment target: `15.0+`
 - Android MSAL: `com.microsoft.identity.client:msal:8.5.0`
 - iOS MSAL: `2.11.0` (pinned intentionally; upstream MSAL podspecs show 2.12.0+ requires iOS 16 and 2.15.0+ requires iOS 17)
+
+### iOS 15 CocoaPods compatibility fix
+This plugin keeps iOS MSAL pinned at `2.11.0` for iOS 15 compatibility. Newer Xcode simulator toolchains reject generated CocoaPods deployment targets lower than iOS 15, while MSAL `2.11.0` still declares iOS `14.0`.
+
+To keep builds working and persistent across regenerations, the plugin runs an `after_prepare` hook that:
+- ensures the generated iOS `Podfile` contains a `post_install` fix that raises any pod target below `15.0` to `15.0` (without lowering higher targets),
+- and applies the same floor to any already-generated `platforms/ios/Pods` project for the current prepare/build.
+
+If you have stale iOS artifacts, regenerate and prepare again so the hook can reapply the fix:
+<pre>
+cordova platform rm ios
+cordova platform add ios
+cordova prepare ios
+</pre>
 ## How do I install it?
 You can install it just like any other Cordova plugin. However, if you're building for Android, you need to specify an optional install variable: a base64 sha1 hash of your keystore file. It can be obtained like this:
 <pre>
