@@ -10,7 +10,7 @@
     <repo>https://github.com/tgptom/cordova-plugin-msal.git</repo>
     <issue>https://github.com/tgptom/cordova-plugin-msal/issues</issue>
     <engines>
-        <engine name="cordova-android" version=">=12.0.0"/>
+        <engine name="cordova-android" version=">=15.0.0"/>
         <engine name="cordova-ios" version=">=7.0.0"/>
         <engine name="cordova-browser" version=">=6.0.0"/>
     </engines> 
@@ -48,10 +48,11 @@
         </config-file>
         <source-file src="src/android/MsalPlugin.java" target-dir="src/com/wrobins/cordova/plugin" />
         <framework src="src/android/build-extras.gradle" custom="true" type="gradleReference" />
-        <framework src="com.microsoft.identity.client:msal:8.4.0" />
+        <framework src="com.microsoft.identity.client:msal:8.5.0" />
     </platform>
     <platform name="ios">
         <config-file target="config.xml" parent="/*">
+            <preference name="deployment-target" value="15.0" />
             <feature name="MsalPlugin">
                 <param name="ios-package" value="MsalPlugin" />
                 <param name="onload" value="true" />
@@ -89,7 +90,7 @@
                 <source url="https://cdn.cocoapods.org/"/>
             </config>
             <pods use_frameworks="true">
-                <pod name="MSAL" spec="~> 2.13.0" />
+                <pod name="MSAL" spec="2.14.1" />
             </pods>
         </podspec>
         <config-file target="*-Info.plist" parent="CFBundleURLTypes">
