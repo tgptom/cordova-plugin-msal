@@ -606,8 +606,6 @@ public class MsalPlugin extends CordovaPlugin {
                     MsalPlugin.this.callbackContext.error(e.getMessage());
                 }
             }
-        } catch (NullPointerException ex) {
-            MsalPlugin.this.callbackContext.error(ex.getMessage());
         }
         return claimsArr;
     }
